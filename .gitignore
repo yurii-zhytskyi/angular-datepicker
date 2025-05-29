@@ -5,3 +5,4 @@ app/components
 .idea
 *.iml
 .DS_Store
+*.code-workspace
