@@ -210,8 +210,10 @@ angular.module('datePicker').factory('datePickerUtils', function () {
     getDate: function (scope, attrs, name) {
       var result = false;
       if (attrs[name]) {
-        result = this.createMoment(attrs[name]);
-        if (!result.isValid()) {
+        if (typeof attrs[name] !== 'string') {
+          result = this.createMoment(attrs[name]);
+        }
+        else {
           result = this.findParam(scope, attrs[name]);
           if (result) {
             result = this.createMoment(result);

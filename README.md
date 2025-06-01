@@ -122,6 +122,20 @@ This fork of angular-datepicker contains several features.
   * If a picker exists with the same `ID` then the information in this picker will be updated.
   * A single `ID` can be used, or an array of `ID`s
 
+### Attributes
+
+- `autoselect-date` attribute (`date-picker`) - set default date value when user select month from `month` view in **datePicker** directive
+available values: `beginOfMonth` | `endOfMonth` | `1`..`31`
+
+- `start-autoselect-date` attribute (`date-range`) - set default date value when user select month from `month` view of `start` calendar in **dateRange** directive
+available values: `beginOfMonth` | `endOfMonth` | `1`..`31`
+
+- `end-autoselect-date` attribute (`date-range`) - set default date value when user select month from `month` view of `end` calendar in **dateRange** directive
+available values: `beginOfMonth` | `endOfMonth` | `1`..`31`
+
+- `clip-date` attribute (`date-picker`, `date-range`) - enable or disable date cliping according to `min-date` and `max-date` values.
+available values: `enable` | `disable` - _default_ `enable`
+
 #### Create picker with ID
 
 ```html

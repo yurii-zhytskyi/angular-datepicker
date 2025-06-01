@@ -9,7 +9,6 @@
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="styles/bootstrap.css">
   <link rel="stylesheet" href="styles/style.css" />
-  <link rel="stylesheet" href="../dist/angular-datepicker.css" />
 </head>
 <body ng-app="sample">
   <div class="row-fluid" ng-controller="DemoController">
@@ -87,7 +86,18 @@
       <div>
         <h2>Range</h2>
 
-        <div date-range id="pickerRange" start="dates.minDate" end="dates.maxDate" date-change="changeDate" view="date" min-view="date" timezone="UTC"></div>
+        <div date-range
+          id="pickerRange"
+          start="dates.minDate"
+          end="dates.maxDate"
+          start-autoselect-date="beginOfMonth"
+          end-autoselect-date="endOfMonth"
+          clip-date="disable"
+          view="date"
+          min-view="date"
+          timezone="UTC"
+          first-day="1"
+        ></div>
 
       </div>
 
@@ -152,10 +162,10 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.4.1/moment-timezone-with-data.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.6.0/ui-bootstrap-tpls.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.47/moment-timezone-with-data.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
   <script src="scripts/datePicker.js"></script>
   <script src="scripts/datePickerUtils.js"></script>
   <script src="scripts/dateRange.js"></script>

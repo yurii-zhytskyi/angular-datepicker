@@ -2,6 +2,14 @@
 var Module = angular.module('datePicker', []);
 
 Module.constant('datePickerConfig', {
+  autoselectDate: {
+    beginOfMonth: 'beginOfMonth',
+    endOfMonth: 'endOfMonth'
+  },
+  attributeState: {
+    disabled: 'disable',
+    enabled: 'enable'
+  },
   template: 'templates/datepicker.html',
   view: 'month',
   views: ['year', 'month', 'date', 'hours', 'minutes'],
@@ -62,6 +70,17 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
         return datePickerUtils.getDate(scope, attrs, name);
       }
 
+      /**
+       * @returns {boolean}
+       */
+      function isClipDateEnabled() {
+        var defaultEnabledValue = !angular.isDefined(attrs.clipDate);
+        var enableSet = attrs.clipDate === datePickerConfig.attributeState.enabled;
+        var notDisabledSet = attrs.clipDate !== datePickerConfig.attributeState.disabled;
+
+        return defaultEnabledValue || enableSet || notDisabledSet;
+      }
+
       var arrowClick = false,
         tz = scope.tz = attrs.timezone,
         createMoment = datePickerUtils.createMoment,
@@ -102,6 +121,26 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
         }
       };
 
+      function getAutoselectedDate (date) {
+        switch (attrs.autoselectDate) {
+          case datePickerConfig.autoselectDate.beginOfMonth:
+            return date.startOf('month');
+          case datePickerConfig.autoselectDate.endOfMonth:
+            return date.endOf('month');
+          default:
+            // check if it is number
+            if (/^\d+$/.test(attrs.autoselectDate)) {
+              var autoselectDate = Number.parseInt(attrs.autoselectDate);
+
+              if (autoselectDate > 0 && autoselectDate < date.endOf('month')) {
+                return date.date(autoselectDate);
+              }
+            }
+
+            return date;
+        }
+      }
+
       scope.selectDate = function (date) {
         if (attrs.disabled) {
           return false;
@@ -109,10 +148,19 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
         if (isSame(scope.date, date)) {
           date = scope.date;
         }
-        date = clipDate(date);
+
+        if (isClipDateEnabled()) {
+          date = clipDate(date);
+        }
+
         if (!date) {
           return false;
         }
+
+        if (!!attrs.autoselectDate && scope.view === 'month') {
+          date = getAutoselectedDate(date);
+        }
+
         scope.date = date;
 
         var nextView = scope.views[scope.views.indexOf(scope.view) + 1];
@@ -262,7 +310,11 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
             date.hours(date.hours() + delta);
             break;
         }
-        date = clipDate(date);
+
+        if (isClipDateEnabled()) {
+          date = clipDate(date);
+        }
+
         if (date) {
           scope.date = date;
           arrowClick = true;
@@ -570,8 +622,10 @@ angular.module('datePicker').factory('datePickerUtils', function () {
     getDate: function (scope, attrs, name) {
       var result = false;
       if (attrs[name]) {
-        result = this.createMoment(attrs[name]);
-        if (!result.isValid()) {
+        if (typeof attrs[name] !== 'string') {
+          result = this.createMoment(attrs[name]);
+        }
+        else {
           result = this.findParam(scope, attrs[name]);
           if (result) {
             result = this.createMoment(result);
@@ -601,12 +655,27 @@ angular.module('datePicker').factory('datePickerUtils', function () {
 var Module = angular.module('datePicker');
 
 Module.directive('dateRange', ['$compile', 'datePickerUtils', 'dateTimeConfig', function ($compile, datePickerUtils, dateTimeConfig) {
+  function setDatePickerAttributes (attrs, model) {
+    var autoselectAttribute = model + 'AutoselectDate';
+
+    if (attrs.hasOwnProperty(autoselectAttribute)) {
+      attrs.autoselectDate = attrs[autoselectAttribute];
+      delete attrs[autoselectAttribute];
+    }
+
+    return attrs;
+  }
+
   function getTemplate(attrs, id, model, min, max) {
-    return dateTimeConfig.template(angular.extend(attrs, {
+    var defaultDatePickerAttributes = setDatePickerAttributes(attrs, model);
+    var specifiedDatePickerAttributes = {
       ngModel: model,
       minDate: min && moment.isMoment(min) ? min.format() : false,
       maxDate: max && moment.isMoment(max) ? max.format() : false
-    }), id);
+    };
+    var extendedAttributes = angular.extend({}, defaultDatePickerAttributes, specifiedDatePickerAttributes);
+
+    return dateTimeConfig.template(extendedAttributes, id);
   }
 
   function randomName() {
@@ -706,6 +775,8 @@ Module.constant('dateTimeConfig', {
       (attrs.ngModel ? 'ng-model="' + attrs.ngModel + '" ' : '') +
       (attrs.firstDay ? 'first-day="' + attrs.firstDay + '" ' : '') +
       (attrs.timezone ? 'timezone="' + attrs.timezone + '" ' : '') +
+      (attrs.autoselectDate ? 'autoselect-date="' + attrs.autoselectDate + '" ' : '') +
+      (attrs.clipDate ? 'clip-date="' + attrs.clipDate + '" ' : '') +
       'class="date-picker-date-time"></div>';
   },
   format: 'YYYY-MM-DD HH:mm',
