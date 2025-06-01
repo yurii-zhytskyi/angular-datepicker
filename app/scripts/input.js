@@ -24,6 +24,7 @@ Module.constant('dateTimeConfig', {
       (attrs.firstDay ? 'first-day="' + attrs.firstDay + '" ' : '') +
       (attrs.timezone ? 'timezone="' + attrs.timezone + '" ' : '') +
       (attrs.autoselectDate ? 'autoselect-date="' + attrs.autoselectDate + '" ' : '') +
+      (attrs.clipDate ? 'clip-date="' + attrs.clipDate + '" ' : '') +
       'class="date-picker-date-time"></div>';
   },
   format: 'YYYY-MM-DD HH:mm',

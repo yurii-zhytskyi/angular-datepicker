@@ -133,6 +133,9 @@ available values: `beginOfMonth` | `endOfMonth` | `1`..`31`
 - `end-autoselect-date` attribute (`date-range`) - set default date value when user select month from `month` view of `end` calendar in **dateRange** directive
 available values: `beginOfMonth` | `endOfMonth` | `1`..`31`
 
+- `clip-date` attribute (`date-picker`, `date-range`) - enable or disable date cliping according to `min-date` and `max-date` values.
+available values: `enable` | `disable` - _default_ `enable`
+
 #### Create picker with ID
 
 ```html
