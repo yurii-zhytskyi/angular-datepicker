@@ -2,12 +2,27 @@
 var Module = angular.module('datePicker');
 
 Module.directive('dateRange', ['$compile', 'datePickerUtils', 'dateTimeConfig', function ($compile, datePickerUtils, dateTimeConfig) {
+  function setDatePickerAttributes (attrs, model) {
+    var autoselectAttribute = model + 'AutoselectDate';
+
+    if (attrs.hasOwnProperty(autoselectAttribute)) {
+      attrs.autoselectDate = attrs[autoselectAttribute];
+      delete attrs[autoselectAttribute];
+    }
+
+    return attrs;
+  }
+
   function getTemplate(attrs, id, model, min, max) {
-    return dateTimeConfig.template(angular.extend(attrs, {
+    var defaultDatePickerAttributes = setDatePickerAttributes(attrs, model);
+    var specifiedDatePickerAttributes = {
       ngModel: model,
       minDate: min && moment.isMoment(min) ? min.format() : false,
       maxDate: max && moment.isMoment(max) ? max.format() : false
-    }), id);
+    };
+    var extendedAttributes = angular.extend({}, defaultDatePickerAttributes, specifiedDatePickerAttributes);
+
+    return dateTimeConfig.template(extendedAttributes, id);
   }
 
   function randomName() {

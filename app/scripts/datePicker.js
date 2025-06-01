@@ -2,6 +2,10 @@
 var Module = angular.module('datePicker', []);
 
 Module.constant('datePickerConfig', {
+  autoselectDate: {
+    beginOfMonth: 'beginOfMonth',
+    endOfMonth: 'endOfMonth'
+  },
   template: 'templates/datepicker.html',
   view: 'month',
   views: ['year', 'month', 'date', 'hours', 'minutes'],
@@ -102,6 +106,26 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
         }
       };
 
+      function getAutoselectedDate (date) {
+        switch (attrs.autoselectDate) {
+          case datePickerConfig.autoselectDate.beginOfMonth:
+            return date.startOf('month');
+          case datePickerConfig.autoselectDate.endOfMonth:
+            return date.endOf('month');
+          default:
+            // check if it is number
+            if (/^\d+$/.test(attrs.autoselectDate)) {
+              var autoselectDate = Number.parseInt(attrs.autoselectDate);
+
+              if (autoselectDate > 0 && autoselectDate < date.endOf('month')) {
+                return date.date(autoselectDate);
+              }
+            }
+
+            return date;
+        }
+      }
+
       scope.selectDate = function (date) {
         if (attrs.disabled) {
           return false;
@@ -113,6 +137,11 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
         if (!date) {
           return false;
         }
+
+        if (!!attrs.autoselectDate && scope.view === 'month') {
+          date = getAutoselectedDate(date);
+        }
+
         scope.date = date;
 
         var nextView = scope.views[scope.views.indexOf(scope.view) + 1];
