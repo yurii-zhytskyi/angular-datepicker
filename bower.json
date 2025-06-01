@@ -21,14 +21,14 @@
     "package.json"
   ],
   "dependencies": {
-    "angular": ">=1.2.14",
-    "moment": "~2.10.6",
-    "moment-timezone": "~0.4.1"
+    "angular": ">=1.8.3",
+    "moment": "~2.30.1",
+    "moment-timezone": "~0.6.0"
   },
   "devDependencies": {
-    "angular": "1.2.14",
-    "angular-mocks": "1.2.14",
-    "angular-scenario": "1.2.14",
-    "angular-bootstrap": "~0.3.0"
+    "angular": "1.8.3",
+    "angular-mocks": "1.8.3",
+    "angular-scenario": "1.8.3",
+    "angular-bootstrap": "~2.5.0"
   }
 }

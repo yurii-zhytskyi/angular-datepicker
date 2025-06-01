@@ -6,6 +6,10 @@ Module.constant('datePickerConfig', {
     beginOfMonth: 'beginOfMonth',
     endOfMonth: 'endOfMonth'
   },
+  attributeState: {
+    disabled: 'disable',
+    enabled: 'enable'
+  },
   template: 'templates/datepicker.html',
   view: 'month',
   views: ['year', 'month', 'date', 'hours', 'minutes'],
@@ -64,6 +68,17 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
 
       function getDate(name) {
         return datePickerUtils.getDate(scope, attrs, name);
+      }
+
+      /**
+       * @returns {boolean}
+       */
+      function isClipDateEnabled() {
+        var defaultEnabledValue = !angular.isDefined(attrs.clipDate);
+        var enableSet = attrs.clipDate === datePickerConfig.attributeState.enabled;
+        var notDisabledSet = attrs.clipDate !== datePickerConfig.attributeState.disabled;
+
+        return defaultEnabledValue || enableSet || notDisabledSet;
       }
 
       var arrowClick = false,
@@ -133,7 +148,11 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
         if (isSame(scope.date, date)) {
           date = scope.date;
         }
-        date = clipDate(date);
+
+        if (isClipDateEnabled()) {
+          date = clipDate(date);
+        }
+
         if (!date) {
           return false;
         }
@@ -291,7 +310,11 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
             date.hours(date.hours() + delta);
             break;
         }
-        date = clipDate(date);
+
+        if (isClipDateEnabled()) {
+          date = clipDate(date);
+        }
+
         if (date) {
           scope.date = date;
           arrowClick = true;
@@ -599,8 +622,10 @@ angular.module('datePicker').factory('datePickerUtils', function () {
     getDate: function (scope, attrs, name) {
       var result = false;
       if (attrs[name]) {
-        result = this.createMoment(attrs[name]);
-        if (!result.isValid()) {
+        if (typeof attrs[name] !== 'string') {
+          result = this.createMoment(attrs[name]);
+        }
+        else {
           result = this.findParam(scope, attrs[name]);
           if (result) {
             result = this.createMoment(result);
@@ -751,6 +776,7 @@ Module.constant('dateTimeConfig', {
       (attrs.firstDay ? 'first-day="' + attrs.firstDay + '" ' : '') +
       (attrs.timezone ? 'timezone="' + attrs.timezone + '" ' : '') +
       (attrs.autoselectDate ? 'autoselect-date="' + attrs.autoselectDate + '" ' : '') +
+      (attrs.clipDate ? 'clip-date="' + attrs.clipDate + '" ' : '') +
       'class="date-picker-date-time"></div>';
   },
   format: 'YYYY-MM-DD HH:mm',
