@@ -86,6 +86,24 @@ Module.directive('dateRange', ['$compile', 'datePickerUtils', 'dateTimeConfig', 
 
       attrs.onSetDate = 'dateChange';
 
+      scope.$on('next', function (event, args) {
+        event.stopPropagation();
+
+        if (args.newDate > scope.end && args.ngModel === 'start') {
+          scope.start = args.newDate;
+          scope.end = args.newDate;
+        }
+      });
+
+      scope.$on('prev', function (event, args) {
+        event.stopPropagation();
+
+        if (args.newDate < scope.start && args.ngModel === 'end') {
+          scope.start = args.newDate;
+          scope.end = args.newDate;
+        }
+      });
+
       var template = '<div><table class="date-range"><tr><td valign="top">' +
         getTemplate(attrs, pickerIDs[0], 'start', false, scope.end) +
         '</td><td valign="top">' +

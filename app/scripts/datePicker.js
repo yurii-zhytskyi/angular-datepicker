@@ -6,6 +6,10 @@ Module.constant('datePickerConfig', {
     beginOfMonth: 'beginOfMonth',
     endOfMonth: 'endOfMonth'
   },
+  dateRangeNgModel: {
+    start: 'start',
+    end: 'end'
+  },
   template: 'templates/datepicker.html',
   view: 'month',
   views: ['year', 'month', 'date', 'hours', 'minutes'],
@@ -126,6 +130,15 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
         }
       }
 
+      function autoscrollDateRange (date) {
+        if (attrs.ngModel === datePickerConfig.dateRangeNgModel.start) {
+          scope.$emit('next', { ngModel: attrs.ngModel, newDate: date });
+        }
+        else if (attrs.ngModel === datePickerConfig.dateRangeNgModel.end) {
+          scope.$emit('prev', { ngModel: attrs.ngModel, newDate: date });
+        }
+      }
+
       scope.selectDate = function (date) {
         if (attrs.disabled) {
           return false;
@@ -133,7 +146,11 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
         if (isSame(scope.date, date)) {
           date = scope.date;
         }
-        date = clipDate(date);
+
+        if (!attrs.hasOwnProperty('autoscrollDateRange')) {
+          date = clipDate(date);
+        }
+
         if (!date) {
           return false;
         }
@@ -291,7 +308,13 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
             date.hours(date.hours() + delta);
             break;
         }
-        date = clipDate(date);
+
+        if (attrs.hasOwnProperty('autoscrollDateRange')) {
+          autoscrollDateRange(date);
+        } else {
+          date = clipDate(date);
+        }
+
         if (date) {
           scope.date = date;
           arrowClick = true;
@@ -355,6 +378,9 @@ Module.directive('datePicker', ['datePickerConfig', 'datePickerUtils', function 
           if (eventIsForPicker(pickerIDs, pickerID)) {
             var updateViews = false, updateViewData = false;
 
+            if (angular.isDefined(data.arrowClick)) {
+              arrowClick = data.arrowClick;
+            }
             if (angular.isDefined(data.minDate)) {
               minDate = data.minDate ? data.minDate : false;
               updateViewData = true;
